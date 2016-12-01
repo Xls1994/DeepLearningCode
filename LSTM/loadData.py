@@ -49,12 +49,14 @@ def load_word_embeddings(vocab, dim):
 
 def load_word_idx(vocab,path):
     wordList =[]
-    wordItems = []
+
     for line in open(path):
         items = line.strip().split(' ')
+        wordItems = []
         for word in items:
             wordItems.append(vocab[word])
         wordList.append(wordItems)
+
     return wordList
 
 def prepare_data(seqs, labels, maxlen=None):
@@ -235,8 +237,11 @@ if __name__=='__main__':
         for i,word in vocab.items():
             f.write(str(i)+' '+str(word)+'\n')
     wordlists =load_word_idx(vocab,'QAcorpus/Ftrain.cnn')
-    with open('wordidx.txt','w')as f:
-        for line in wordlists:
-            for item in line:
-                f.write(str(item)+' ')
-            f.write('\n')
+    print len(wordlists[1])
+    print len(wordlists)
+    print type(wordlists)
+    # with open('wordidx.txt','w')as f:
+    #     for line in wordlists:
+    #         for item in line:
+    #             f.write(str(item)+' ')
+    #         f.write('\n')
