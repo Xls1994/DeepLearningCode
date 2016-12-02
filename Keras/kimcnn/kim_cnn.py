@@ -173,20 +173,6 @@ if __name__=='__main__':
             # print('test cost:',cost,'test accuracy:', accuracy)
             # result =model.predict(test_set_x)
             # np.savetxt('results/result'+str(i)+'.txt',result,fmt='%.2f',delimiter=' ')
-    
-    def buildModel():
-        main_inputs =Input(shape=(maxlen,),dtype='int32',name='main_input')
-        inputs =Embedding(max_features, embedding_size, input_length=maxlen)(main_inputs)
-        # x =Dropout(0.25)(inputs)
-        x =Convolution1D(nb_filter=nb_filter,
-                            filter_length=filter_length,
-                            border_mode='valid',
-                            activation='relu',
-                            subsample_length=1)(inputs)
-        x =MaxPooling1D(pool_length=pool_length)(x)
-        x =LSTM(lstm_output_size)(x)
-        predict =Dense(1,activation='sigmoid')(x)
-        model =Model(input=main_inputs,output=predict)
-        return model
+
 
 
