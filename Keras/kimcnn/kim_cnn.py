@@ -79,7 +79,7 @@ def kimCNN():
     vocabulary = 150
 
     model =Sequential()
-    model.add(Embedding(vocabulary, embedding_dim, input_length=sequence_length,
+    model.add(Embedding(len(vocabulary), embedding_dim, input_length=sequence_length,
                         ))
     model.add(Dropout(dropout_prob[0], input_shape=(sequence_length, embedding_dim)))
     model.add(CNNmodel())
@@ -108,10 +108,11 @@ def loadData(path):
 
 if __name__=='__main__':
     # set  batch parameters:
-    modelPath ='model.json'
+
+    #set dims
     embedding_dims = 100
     hidden_dims = 50
-    nb_epoch =3
+    nb_epoch =20
     train,test ,W=loadData('mr_Fscope.p')
 
     train_set_x=train[0]
@@ -119,14 +120,20 @@ if __name__=='__main__':
     test_set_x,test_set_y =test
 
     print ('label type',type(train_set_y))
-
+    # np.savetxt('label',train_set_y,fmt='%.2f',delimiter=' ')
     wordEM =[W]
+
     model = Sequential()
+
+    # we start off with an efficient embedding layer which maps
+    # our vocab indices into embedding_dims dimensions
     model.add(Embedding(10650, 100, input_length=18,weights=wordEM))    #(none,18,100)
     model.add(Convolution1D(nb_filter=150,filter_length=3,activation='relu',
                             input_dim=100))
     model.add(MaxPooling1D())
+    # We add a vanilla hidden layer:
     model.add(LSTM(50))
+    # model.add(Dense(50,activation='relu'))
     model.add(Dense(2))
 
     model.add(Activation('softmax'))
@@ -137,18 +144,18 @@ if __name__=='__main__':
     model.compile(loss='categorical_crossentropy',
                   optimizer='adagrad',
                   metrics=['accuracy'])
-    print ('save model...')
-    json_str =model.to_json()
-    open(modelPath,'w').write(json_str)
 
     print ('train...on batch...')
-    model.fit(train_set_x,trainlabel,32,5)
-    model.save_weights('model_weights.hdf5')
+    # trainOnbatch(nb_epoch)
+    #
+    model.fit(train_set_x,trainlabel,32,10)
     result =model.predict(test_set_x)
     cost,acc =model.evaluate(test_set_x,testlabel)
     print ('accuracy',acc)
     np.savetxt('result11'+'.txt',result,fmt='%.2f',delimiter=' ')
-
+    json_str =model.to_json()
+    # getlayer2=K.function([model.layers[0].input,K.learning_phase()],[model.layers[4].output])
+    # layerout= getlayer2([test_set_x,0])
 
     def trainOnbatch(nb_epoch):
         batch_index =0
@@ -161,8 +168,10 @@ if __name__=='__main__':
             print ('train...cost',cost)
             batch_index += batch_size
             batch_index = 0 if batch_index>=train_set_x.shape[0] else batch_index
-            model.save_weights('model_'+str(i)+'.hdf5')
-
-
+            model.save_weights('model'+str(i)+'.hdf5')
+            # testcost,accuracy =model.evaluate(test_set_x, testlabel, verbose=0)
+            # print('test cost:',cost,'test accuracy:', accuracy)
+            # result =model.predict(test_set_x)
+            # np.savetxt('results/result'+str(i)+'.txt',result,fmt='%.2f',delimiter=' ')
 
 
