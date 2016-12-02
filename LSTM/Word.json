@@ -1,0 +1,8 @@
+{
+    "TraiContext": "QAcorpus/Word/Ftrain.cnn",
+    "TraiLabel": "QAcorpus/Label/Ftrainlabel.txt",
+    "TestContext": "QAcorpus/Word/Ftest.cnn",
+    "TestLabel": "QAcorpus/Label/Ftestlabel.txt",
+    "WordVector": "QAcorpus/Embedding/WordAndCueContextEmbedding100.txt",
+    "pklPath":"QAcorpus/Word/mr_FscopeContexts.pkl" 
+}

@@ -36,8 +36,8 @@ def load_vectors(emPath,dim):
         vectors[items[0]] = vec
     return vectors
 
-def load_word_embeddings(vocab, dim):
-    vectors = load_vectors()
+def load_word_embeddings(vocab, path,dim):
+    vectors = load_vectors(path,dim)
     embeddings = [] #brute initialization
     for i in range(0, len(vocab)):
         vec =np.random.uniform(-0.25,0.25,dim)
@@ -47,7 +47,7 @@ def load_word_embeddings(vocab, dim):
             embeddings[code] = vectors[word]
     return np.array(embeddings, dtype='float32')
 
-def load_word_idx(vocab,path):
+def load_word_idx(vocab,path,save='None'):
     wordList =[]
 
     for line in open(path):
@@ -56,8 +56,52 @@ def load_word_idx(vocab,path):
         for word in items:
             wordItems.append(vocab[word])
         wordList.append(wordItems)
-
+    if save!='None':
+        with open(path+'_wordidx.txt','w')as f:
+            for line in wordList:
+                for item in line:
+                    f.write(str(item)+' ')
+                f.write('\n')
     return wordList
+
+def loadLabel(path):
+    labels =[]
+    for line in open(path):
+        line =line.strip()
+        if line=='-1':
+            labels.append(0)
+        else:
+            labels.append(1)
+    return labels
+def dumpFiles(filePath,dimension):
+    import  json
+    import cPickle
+    lstmJson = open(filePath, "r")
+    inputInfo = json.load(lstmJson)
+    lstmJson.close()
+    trainPath =inputInfo["TraiContext"]
+    testPath =inputInfo["TestContext"]
+    trainLabelPath =inputInfo["TraiLabel"]
+    testLabelPath =inputInfo["TestLabel"]
+    emPath =inputInfo["WordVector"]
+    outputPath=inputInfo["pklPath"]
+    output_file =open(outputPath,'w')
+
+    vocab =build_vocab(trainPath,testPath)
+    embeddings =load_word_embeddings(vocab,emPath,dimension)
+    print len(vocab)
+    trainlabel =loadLabel(trainLabelPath)
+    testlabel =loadLabel(testLabelPath)
+    trainIdx =load_word_idx(vocab,trainPath)
+    testIdx =load_word_idx(vocab,testPath)
+    train_data = [trainIdx, trainlabel]
+    test_data = [testIdx, testlabel]
+    embeddings_data =[embeddings]
+    cPickle.dump(train_data, output_file)
+    cPickle.dump(test_data, output_file)
+    cPickle.dump(embeddings_data,output_file)
+    output_file.close()
+
 
 def prepare_data(seqs, labels, maxlen=None):
 
@@ -92,9 +136,10 @@ def prepare_data(seqs, labels, maxlen=None):
 def load_data(path="imdb.pkl", n_words=100000, valid_portion=0.1, maxlen=None,
               sort_by_len=True):
     import cPickle
-    f =open(path,'rb')
+    f =open(path,'r')
     train_set = cPickle.load(f)
     test_set = cPickle.load(f)
+    embeddings =cPickle.load(f)
     f.close()
 
     if maxlen:
@@ -152,96 +197,21 @@ def load_data(path="imdb.pkl", n_words=100000, valid_portion=0.1, maxlen=None,
     # valid = (valid_set_x, valid_set_y)
     test = (test_set_x, test_set_y)
 
-    return train, test
+    return train, test,embeddings[0]
 
-# def load_data(trainList, vocab, batch_size):
-#     train_1, train_2, train_3 = [], [], []
-#     mask_1, mask_2, mask_3 = [], [], []
-#     counter = 0
-#     while True:
-#         pos = trainList[random.randint(0, len(trainList)-1)]
-#         neg = trainList[random.randint(0, len(trainList)-1)]
-#         if pos[2].startswith('<a>') or pos[3].startswith('<a>') or neg[3].startswith('<a>'):
-#             #print 'empty string ......'
-#             continue
-#         x, m = encode_sent(vocab, pos[2], 100)
-#         train_1.append(x)
-#         mask_1.append(m)
-#         x, m = encode_sent(vocab, pos[3], 100)
-#         train_2.append(x)
-#         mask_2.append(m)
-#         x, m = encode_sent(vocab, neg[3], 100)
-#         train_3.append(x)
-#         mask_3.append(m)
-#         counter += 1
-#         if counter >= batch_size:
-#             break
-#     return np.transpose(np.array(train_1, dtype=config.floatX)), np.transpose(np.array(train_2, dtype=config.floatX)), np.transpose(np.array(train_3, dtype=config.floatX)), np.transpose(np.array(mask_1, dtype=config.floatX)) , np.transpose(np.array(mask_2, dtype=config.floatX)), np.transpose(np.array(mask_3, dtype=config.floatX))
-#
-# def load_data_val(testList, vocab, index, batch_size):
-#     x1, x2, x3, m1, m2, m3 = [], [], [], [], [], []
-#     for i in range(0, batch_size):
-#         true_index = index + i
-#         if true_index >= len(testList):
-#             true_index = len(testList) - 1
-#         items = testList[true_index]
-#         x, m = encode_sent(vocab, items[2], 100)
-#         x1.append(x)
-#         m1.append(m)
-#         x, m = encode_sent(vocab, items[3], 100)
-#         x2.append(x)
-#         m2.append(m)
-#         x, m = encode_sent(vocab, items[3], 100)
-#         x3.append(x)
-#         m3.append(m)
-#     return np.transpose(np.array(x1, dtype=config.floatX)), np.transpose(np.array(x2, dtype=config.floatX)), np.transpose(np.array(x3, dtype=config.floatX)), np.transpose(np.array(m1, dtype=config.floatX)) , np.transpose(np.array(m2, dtype=config.floatX)), np.transpose(np.array(m3, dtype=config.floatX))
-#
-# def validation(validate_model, testList, vocab, batch_size):
-#     index, score_list = int(0), []
-#     while True:
-#         x1, x2, x3, m1, m2, m3 = load_data_val(testList, vocab, index, batch_size)
-#         batch_scores, nouse = validate_model(x1, x2, x3, m1, m2, m3)
-#         for score in batch_scores:
-#             score_list.append(score)
-#         index += batch_size
-#         if index >= len(testList):
-#             break
-#         print 'Evaluation ' + str(index)
-#     sdict, index = {}, int(0)
-#     for items in testList:
-#         qid = items[1].split(':')[1]
-#         if not qid in sdict:
-#             sdict[qid] = []
-#         sdict[qid].append((score_list[index], items[0]))
-#         index += 1
-#     lev0, lev1 = float(0), float(0)
-#     of = open('/QAcorpus/acc.lstm', 'a')
-#     for qid, cases in sdict.items():
-#         cases.sort(key=operator.itemgetter(0), reverse=True)
-#         score, flag = cases[0]
-#         if flag == '1':
-#             lev1 += 1
-#         if flag == '0':
-#             lev0 += 1
-#     for s in score_list:
-#         of.write(str(s) + '\n')
-#     of.write('lev1:' + str(lev1) + '\n')
-#     of.write('lev0:' + str(lev0) + '\n')
-#     print 'lev1:' + str(lev1)
-#     print 'lev0:' + str(lev0)
-#     of.close()
 
 if __name__=='__main__':
-    vocab =build_vocab('QAcorpus/Ftrain.cnn','QAcorpus/Ftest.cnn')
-    with open('vocab.txt','w')as f:
-        for i,word in vocab.items():
-            f.write(str(i)+' '+str(word)+'\n')
-    wordlists =load_word_idx(vocab,'QAcorpus/Ftrain.cnn')
-    print len(wordlists[1])
-    print len(wordlists)
-    print type(wordlists)
-    # with open('wordidx.txt','w')as f:
-    #     for line in wordlists:
-    #         for item in line:
-    #             f.write(str(item)+' ')
-    #         f.write('\n')
+    path ='QAcorpus/Word/mr_FscopeContexts.pkl'
+    # dumpFiles(path,100)
+    import cPickle
+    f =open(path,'r')
+    train_set = cPickle.load(f)
+    test_set = cPickle.load(f)
+    embeddings =cPickle.load(f)
+    f.close()
+    print len(train_set[0])
+    print(len(test_set[1]))
+    print( len(embeddings))
+    print type(embeddings[0])
+    pass
+
