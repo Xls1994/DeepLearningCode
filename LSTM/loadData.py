@@ -133,6 +133,7 @@ def prepare_data(seqs, labels, maxlen=None):
         x_mask[:lengths[idx], idx] = 1.
 
     return x, x_mask, labels
+
 def load_data(path="imdb.pkl", n_words=100000, valid_portion=0.1, maxlen=None,
               sort_by_len=True):
     import cPickle

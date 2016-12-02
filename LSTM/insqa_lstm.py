@@ -1,15 +1,13 @@
 ############################################################
 # lstm + CNN
 ############################################################
-
-import numpy as np
 import theano
-from theano import config
 import theano.tensor as T
+import  sys
 from theano.tensor.signal import pool
 from theano.tensor.nnet import conv2d
 from loadData import *
-
+from collections import OrderedDict
 def ortho_weight(ndim):
     W = np.random.randn(ndim, ndim)
     u, s, v = np.linalg.svd(W)
@@ -101,7 +99,8 @@ class LSTM_Lr (object):
         self.y_pred =y_perd
         off =1e-8
         self.cost = -T.log(self.p_y_given_x[T.arange(n_samples), label] + off).mean()
-        # self.cost = -T.mean(T.log(p_y_given_x)[T.arange(label.shape[0]), label])
+        self.f_pred = theano.function([input1, mask1], y_perd, name='f_pred')
+        self.f_pred_prob =theano.function([input1,mask1],p_y_given_x,name='f_pred_prob')
         self.errors =T.mean(T.neq(self.y_pred, label))
         self.tparams =tparams
 
@@ -189,76 +188,21 @@ def lstm_layer(tparams, state_below, proj_size, prefix='lstm', mask=None):
 def _p(pp, name):
     return '%s_%s' % (pp, name)
 
-def train():
-    batch_size = int(256)
-    embedding_size = 100
-    learning_rate = 0.05
-    n_epochs = 20
-    validation_freq = 1000
-    filter_sizes = [1, 2, 3]
-    num_filters = 500
-    maxLen =12
-    path ='QAcorpus/Word/mr_FscopeContexts.pkl'
-    trainSet,testSet,word_embeddings = load_data(path,n_words=10733,maxlen=12)
-    print len(word_embeddings)
-    print type(word_embeddings[0])
-    print word_embeddings.shape
+def unzip(zipped):
+    """
+    When we pickle the model. Needed for the GPU stuff.
+    """
+    new_params = OrderedDict()
+    for kk, vv in zipped.iteritems():
+        new_params[kk] = vv.get_value()
+    return new_params
 
-    x1 = T.matrix('x1')
-    m1= T.matrix('m1')
-    y =T.ivector('y')
-    model =LSTM_Lr(input1=x1,mask1=m1,label= y,word_embeddings=word_embeddings,
-                   batch_size=batch_size,
-                   sequence_len=maxLen,
-                   embedding_size=embedding_size,
-                   filter_sizes=filter_sizes,
-                   num_filters=num_filters
-
-    )
-
-    cost = model.cost
-    params, errors = model.params, model.errors
-    grads = T.grad(cost, params)
-    updates = [
-        (param_i, param_i - learning_rate * grad_i)
-        for param_i, grad_i in zip(params, grads)
-    ]
-
-    p1= T.matrix('p1')
-    q1 = T.matrix('q1')
-    labels =T.ivector('labels')
-    train_model = theano.function(
-        [p1, q1,labels],
-        [cost],
-        updates=updates,
-        givens={
-            x1: p1, m1: q1,y:labels
-        }
-    )
-
-    validate_model = theano.function(
-        inputs=[p1,  q1,labels],
-        outputs=[cost, errors],
-        #updates=updates,
-        givens={
-            x1: p1, m1: q1,y:labels
-        }
-    )
-
-    epoch = 0
-    done_looping = False
-    while (epoch < n_epochs) and (not done_looping):
-        epoch += 1
-        train_x,x_mask,y =prepare_data(trainSet[0],trainSet[1])
-        #print('train_x1, train_x2, train_x3')
-        #print(train_x1.shape, train_x2.shape, train_x3.shape)
-        cost_ij = train_model(train_x,  x_mask)
-        print 'load data done ...... epoch:' + str(epoch) + ' cost:' + str(cost_ij)
-        if epoch % validation_freq == 0:
-            print 'Evaluation ......'
-            test_x,test_x_mask,y =prepare_data(testSet[0],testSet[1])
-            cost, errors =validate_model(test_x,test_x_mask,y)
-            print cost,'.............',errors
+def zipp(params, tparams):
+    """
+    When we reload the model. Needed for the GPU stuff.
+    """
+    for kk, vv in params.iteritems():
+        tparams[kk].set_value(vv)
 
 def get_minibatches_idx(n, minibatch_size, shuffle=False):
     """
@@ -320,15 +264,73 @@ def adadelta(lr, tparams, grads, x_zheng, x_zheng_mask, y, cost):
                                on_unused_input='ignore',
                                name='adadelta_f_update')
 
-    return f_grad_shared, f_grad_shared, f_update
+    return f_grad_shared,  f_update
 
+def pred_probs(f_pred_prob, prepare_data, data, iterator, verbose=False):
+    """ If you want to use a trained model, this is useful to compute
+    the probabilities of new examples.
+    """
+    n_samples = len(data[0])
+    probs = np.zeros((n_samples, 2)).astype(config.floatX)
+
+    n_done = 0
+
+    for _, test_index in iterator:
+        x_zheng, x_zheng_mask, y = prepare_data([data[0][t] for t in test_index],
+                                  np.array(data[1])[test_index],
+                                  maxlen=None)
+        pred_probs = f_pred_prob(x_zheng, x_zheng_mask)
+        probs[test_index, :] = pred_probs
+
+        n_done += len(test_index)
+        if verbose:
+            print '%d/%d samples classified' % (n_done, n_samples)
+
+    return probs
+
+
+def pred_error(f_pred, prepare_data, data, iterator, verbose=False):
+    """
+    Just compute the error
+    f_pred: Theano fct computing the prediction
+    prepare_data: usual prepare_data for that dataset.
+    """
+    valid_err = 0
+    for _, valid_index in iterator:
+        x_zheng, x_zheng_mask, y = prepare_data([data[0][t] for t in valid_index],
+                                   np.array(data[1])[valid_index],
+                                  maxlen=None)
+        preds = f_pred(x_zheng, x_zheng_mask)
+        targets = np.array(data[1])[valid_index]
+
+        valid_err += (preds == targets).sum()
+    valid_err = 1. - numpy_floatX(valid_err) / len(data[0])
+
+    return valid_err
+
+def get_proj(f_proj, prepare_data, data, iterator, dim_proj, verbose=False):
+    """
+    Get the top hidden layer
+    """
+    n_samples = len(data[0])
+    projs = np.zeros((n_samples, 2*dim_proj)).astype(config.floatX)
+
+    for _, index in iterator:
+        x_zheng, x_zheng_mask, x_ni, x_ni_mask, y = prepare_data([data[0][t] for t in index],
+                                  [data[1][t] for t in index],
+                                  np.array(data[2])[index],
+                                  maxlen=None)
+        hidden_projs = f_proj(x_zheng, x_zheng_mask, x_ni, x_ni_mask)
+        projs[index, :] = hidden_projs
+
+    return projs
 
 def trainLstm():
     import time
     validFreq=100,  # Compute the validation error after this number of update.
     saveFreq=200,  # Save the parameters after every saveFreq updates
     path ='QAcorpus/Word/mr_FscopeContexts.pkl'
-    trainSet,testSet,word_embeddings = load_data(path,n_words=10733,maxlen=12)
+    dispFreq=10
     test_size =4000
     test_batch_size = int(256)
     embedding_size = 100
@@ -337,6 +339,8 @@ def trainLstm():
     num_filters = 500
     maxLen =12
     lrate=0.01
+    saveto='1.npz'
+    trainSet,testSet,word_embeddings = load_data(path,n_words=10733,maxlen=12)
     if test_size > 0:
         # The test set is sorted by size, but we want to keep random
         # size example.  So we must select a random selection of the
@@ -346,7 +350,7 @@ def trainLstm():
         idx = idx[:test_size]
         test = ([testSet[0][n] for n in idx], [testSet[1][n] for n in idx])
 
-    ydim = np.max(train[1]) + 1
+
     print 'Building model'
     x = T.matrix('x')
     m= T.matrix('m')
@@ -361,13 +365,14 @@ def trainLstm():
     )
     cost =model.cost
     f_cost = theano.function([x,m, y], cost, name='f_cost')
-    params, errors = model.params, model.errors
-    grads = T.grad(cost, wrt=model.tparams.values())
+    tparams, errors = model.tparams, model.errors
+    grads = T.grad(cost, wrt=tparams.values())
     f_grad = theano.function([x,m, y], grads, name='f_grad')
-
+    f_pred =model.f_pred
+    f_pred_prob =model.f_pred_prob
     lr = T.scalar(name='lr')
-    f_grad_shared, f_grad_shared,  f_update \
-        = adadelta(lr, model.tparams, grads, x, m,  y, cost)
+    f_grad_shared,   f_update \
+        = adadelta(lr, tparams, grads, x, m,  y, cost)
 
     print 'Optimization'
 
@@ -380,13 +385,13 @@ def trainLstm():
     best_p = None
     bad_count = 0
     if validFreq == -1:
-        validFreq = len(train[0]) / test_batch_size
+        validFreq = len(trainSet[0]) / test_batch_size
     if saveFreq == -1:
-        saveFreq = len(train[0]) / test_batch_size
+        saveFreq = len(trainSet[0]) / test_batch_size
 
     uidx = 0  # the number of update done
 
-    kf_train_sorted = get_minibatches_idx(len(train[0]), test_batch_size)
+    kf_train_sorted = get_minibatches_idx(len(trainSet[0]), test_batch_size)
 
     estop = False  # early stop
     start_time = time.time()
@@ -398,82 +403,53 @@ def trainLstm():
 
         for eidx in xrange(n_epochs):
             n_samples = 0
-            kf = get_minibatches_idx(len(train[0]), test_batch_size, shuffle=False)
+            kf = get_minibatches_idx(len(trainSet[0]), test_batch_size, shuffle=False)
             for _, train_index in kf:
                 uidx += 1
                 # use_noise.set_value(1.)
-                y = [train[2][t] for t in train_index]
-                x_ni = [train[1][t]for t in train_index]
-                x_zheng = [train[0][t]for t in train_index]
-                x1, x1_mask, x2, x2_mask, y = prepare_data(x_zheng, x_ni, y)
+
+                y = [trainSet[1][t]for t in train_index]
+                x_zheng = [trainSet[0][t]for t in train_index]
+                x1, x1_mask, y = prepare_data(x_zheng, y)
                 n_samples += x1.shape[1]
-                cost = f_grad_shared(x1, x1_mask, x2, x2_mask, y)
+                cost = f_grad_shared(x1, x1_mask, y)
                 f_update(lrate)
                 if np.isnan(cost) or np.isinf(cost):
                     print 'NaN detected'
                     return 1., 1., 1.
 
-                if numpy.mod(uidx, dispFreq) == 0:
-                    print 'Epoch ', eidx, 'Update ', uidx, 'Cost ', cost, 'Cost1', cost1, 'Cost2', cost2,'Cost3',cost3,'Cost4',\
-                        cost4,diffStr
+                if np.mod(uidx, dispFreq) == 0:
+                    print 'Epoch ', eidx, 'Update ', uidx, 'Cost ', cost
 
-                if saveto and numpy.mod(uidx, saveFreq) == 0:
-                    print 'Saving...',
+                if np.mod(uidx, validFreq) == 0:
+                    # use_noise.set_value(0.)
 
-                    if best_p is not None:
-                        params = best_p
+                    train_err = pred_error(f_pred, prepare_data, trainSet, kf)
+                    print('22222222222')
+                    test_err = pred_error(f_pred, prepare_data, testSet, kf_test)
+                    print('33333333333' )
 
-                    else:
-                        params = unzip(tparams)
-                    numpy.savez(saveto, history_errs=history_errs, **params)
-                    pkl.dump(model_options, open('%s.pkl' % saveto, 'wb'), -1)
-                    print 'Done'
-
-                if numpy.mod(uidx, validFreq) == 0:
-                    use_noise.set_value(0.)
-                    print('11111111111' + diffStr)
-                    train_err = pred_error(f_pred, prepare_data, train, kf)
-                    print('22222222222'+diffStr)
-                    test_err = pred_error(f_pred, prepare_data, test, kf_test)
-                    print('33333333333' +diffStr)
-                    # test_proj = get_proj(f_proj, prepare_data, test, kf_test, dim_proj)
-                    # print('44444444444')
-                    # train_proj = get_proj(f_proj, prepare_data, train, kf, dim_proj)
-                    # print('55555555555')
                     history_errs.append([test_err])
-                    print('4444444444' + diffStr)
-                    print('Accuracy:' + str(1-float(test_err)) + diffStr)
+                    print('4444444444' )
+                    print('Accuracy:' + str(1-float(test_err)) )
                     f.write('Accuracy:' + str(1-float(test_err)))
                     f.write('\n')
 
                     if (uidx == 0 or
-                        test_err <= numpy.array(history_errs)[:].min()):
+                        test_err <= np.array(history_errs)[:].min()):
 
-                        best_p = unzip(tparams)
+                        best_p = unzip(model.tparams)
                         bad_counter = 0
-                        test_prob_best = pred_probs(f_pred_prob, prepare_data, test, kf_test)
+                        test_prob_best = pred_probs(f_pred_prob, prepare_data, testSet, kf_test)
 
-                        # numpy.savetxt('results/'+embedName+'_embedding'+str(dim_proj)+'/train_proj_best.txt', train_proj, fmt='%.4f', delimiter=' ')
-                        # numpy.savetxt('paper experiment/'+embedName+'/test_proj_best.txt', test_proj, fmt='%.4f', delimiter=' ')
-                        numpy.savetxt(dataSetPath+'/test_best.txt', test_prob_best, fmt='%.4f', delimiter=' ')
-                        # numpy.savetxt(embedName+'/embeddings_best.txt', params['Wemb'], fmt='%.4f', delimiter=' ')
+                        np.savetxt('QAcorpus/test_best.txt', test_prob_best, fmt='%.4f', delimiter=' ')
 
-                    print ('Train ', train_err, 'Test ', test_err, diffStr)
-                    # if(train_err < errorThreshold):
-                    #     countLessThanThreshold += 1
-                    #     if(countLessThanThreshold > exitThresholdHitCount):
-                    #         estop = True
 
-            # numpy.savetxt(embedName+'/embeddings_'+str(eidx)+'.txt', params['Wemb'], fmt='%.4f', delimiter=' ')
+                    print ('Train ', train_err, 'Test ', test_err)
 
-            # train_prob = pred_probs(f_pred_prob, prepare_data, train, kf_train_sorted)
-            test_prob = pred_probs(f_pred_prob, prepare_data, test, kf_test)
+            test_prob = pred_probs(f_pred_prob, prepare_data, testSet, kf_test)
 
-            # numpy.savetxt(embedName+'/test_proj_'+str(eidx)+'.txt', test_proj, fmt='%.4f', delimiter=' ')
-            # numpy.savetxt(embedName+'/train_proj_'+str(eidx)+'.txt', train_proj, fmt='%.4f', delimiter=' ')
-
-            # numpy.savetxt('paper experiment/'+embedName+'/train_prob_'+str(eidx)+'.txt', train_prob, fmt='%.2f', delimiter=' ')
-            numpy.savetxt(dataSetPath+'/test_prob_'+str(eidx)+'.txt', test_prob, fmt='%.4f', delimiter=' ')
+            np.savetxt('QAcorpus/test_prob_'+str(eidx)+'.txt', test_prob, fmt='%.4f', delimiter=' ')
 
             print 'Seen %d samples' % n_samples
 
@@ -490,18 +466,16 @@ def trainLstm():
     else:
         best_p = unzip(tparams)
 
-    use_noise.set_value(0.)
+    train_err = pred_error(f_pred, prepare_data, trainSet, kf_train_sorted)
+    test_err = pred_error(f_pred, prepare_data, testSet, kf_test)
 
-    train_err = pred_error(f_pred, prepare_data, train, kf_train_sorted)
-    test_err = pred_error(f_pred, prepare_data, test, kf_test)
-
-    print 'Train ', train_err, 'Test ', test_err, diffStr
+    print 'Train ', train_err, 'Test ', test_err
     if saveto:
-        numpy.savez(saveto, train_err=train_err, test_err=test_err,
+        np.savez(saveto, train_err=train_err, test_err=test_err,
                     history_errs=history_errs, **best_p)
 
     print 'The code run for %d epochs, with %f sec/epochs' % (
-        (eidx + 1), (end_time - start_time) / (1. * (eidx + 1))), diffStr
+        (eidx + 1), (end_time - start_time) / (1. * (eidx + 1)))
     print >> sys.stderr, ('Training took %.1fs' %
                           (end_time - start_time))
     return train_err, test_err
@@ -509,4 +483,4 @@ def trainLstm():
     pass
 
 if __name__ == '__main__':
-    train()
+    trainLstm()
