@@ -22,7 +22,8 @@ def log(x):
 class Evaluator:
     def __init__(self, conf, model, optimizer=None):
         try:
-            data_path = os.environ['INSURANCE_QA']
+            # data_path = os.environ['INSURANCE_QA']
+            data_path ='corpus'
         except KeyError:
             print("INSURANCE_QA is not set. Set it to your clone of https://github.com/codekansas/insurance_qa_python")
             sys.exit(1)
@@ -207,25 +208,25 @@ class Evaluator:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) >= 2 and sys.argv[1] == 'serve':
-        from flask import Flask
-        app = Flask(__name__)
-        port = 5000
-        lines = list()
-        def log(x):
-            lines.append(x)
-
-        @app.route('/')
-        def home():
-            return ('<html><body><h1>Training Log</h1>' +
-                    ''.join(['<code>{}</code><br/>'.format(line) for line in lines]) +
-                    '</body></html>')
-
-        def start_server():
-            app.run(debug=False, use_evalex=False, port=port)
-
-        thread.start_new_thread(start_server, tuple())
-        print('Serving to port %d' % port, file=sys.stderr)
+    # if len(sys.argv) >= 2 and sys.argv[1] == 'serve':
+    #     from flask import Flask
+    #     app = Flask(__name__)
+    #     port = 5000
+    #     lines = list()
+    #     def log(x):
+    #         lines.append(x)
+    #
+    #     @app.route('/')
+    #     def home():
+    #         return ('<html><body><h1>Training Log</h1>' +
+    #                 ''.join(['<code>{}</code><br/>'.format(line) for line in lines]) +
+    #                 '</body></html>')
+    #
+    #     def start_server():
+    #         app.run(debug=False, use_evalex=False, port=port)
+    #
+    #     thread.start_new_thread(start_server, tuple())
+    #     print('Serving to port %d' % port, file=sys.stderr)
 
     import numpy as np
 
@@ -238,7 +239,7 @@ if __name__ == '__main__':
 
         'training': {
             'batch_size': 100,
-            'nb_epoch': 2000,
+            'nb_epoch': 20,
             'validation_split': 0.1,
         },
 
