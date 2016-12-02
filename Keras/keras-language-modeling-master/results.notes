@@ -1,0 +1,41 @@
+Best results achieved for each model:
+
+Embedding + Max Pooling:
+ - Top 1 Precision:
+   - 0.492 on test 1
+   - 0.483 on test 2
+   - 0.495 on dev
+ - MRR:
+   - 0.624 on test 1
+   - 0.611 on test 2
+   - 0.624 on dev
+
+Attentional LSTM + Max Pooling:
+ - Top 1 precision:
+   - 0.480 on test 1
+   - 0.465 on test 2
+   - 0.487 on dev
+ - MRR:
+   - 0.627 on test 1
+   - 0.613 on test 2
+   - 0.635 on dev
+
+Unsupervised RNN language model + trained embeddings:
+ - Top 1 precision:
+   - 0.546 on test 1
+   - 0.527 on test 2
+   - 0.552 on dev
+ - MRR:
+   - 0.670 on test 1
+   - 0.651 on test 2
+   - 0.671 on dev
+
+Training ConvolutionalLSTM model for a long time (~4 days):
+ - Top-1 Precision:
+   - 0.564 on test 1
+   - 0.543 on test 2
+   - 0.573 on dev
+ - MRR:
+   - 0.681 on test 1
+   - 0.661 on test 2
+   - 0.686 on dev
