@@ -90,7 +90,7 @@ class LSTM_Lr (object):
 
         n_timesteps =input1.shape[0]
         n_samples =input1.shape[1]
-        lstm1, lstm_whole1 = self._lstm_net(tparams, input1, n_timesteps, n_samples, embedding_size, mask1, proj_size)
+        lstm1, lstm_whole1 = self._lstm_net(tparams, input1, sequence_len, batch_size, embedding_size, mask1, proj_size)
         cnn_input1 = T.reshape(lstm1.dimshuffle(1, 0, 2), [batch_size, 1, sequence_len, proj_size])
         cnn1 = self._cnn_net(tparams, cnn_input1, batch_size, sequence_len, num_filters, filter_sizes, proj_size)
 
@@ -127,6 +127,7 @@ class LSTM_Lr (object):
         output_tensor = T.reshape(T.concatenate(outputs, axis=1), [batch_size, num_filters_total])
         return output_tensor
     def _lstm_net(self, tparams, _input, sequence_len, batch_size, embedding_size, mask, proj_size):
+
         input_matrix = tparams['look_table'][T.cast(_input.flatten(), dtype="int32")]
         input_x = input_matrix.reshape((sequence_len, batch_size, embedding_size))
         proj, proj_whole = lstm_layer(tparams, input_x, proj_size, prefix='lstm', mask=mask)
@@ -250,7 +251,7 @@ def adadelta(lr, tparams, grads, x_zheng, x_zheng_mask, y, cost):
              for rg2, g in zip(running_grads2, grads)]
 
     f_grad_shared = theano.function([x_zheng, x_zheng_mask, y], cost, updates=zgup + rg2up,
-                                    name='adadelta_f_grad_shared')
+                                    name='adadelta_f_grad_shared',allow_input_downcast=True)
 
     updir = [-T.sqrt(ru2 + 1e-6) / T.sqrt(rg2 + 1e-6) * zg
              for zg, ru2, rg2 in zip(zipped_grads,
@@ -353,7 +354,7 @@ def trainLstm():
 
     print 'Building model'
     x = T.matrix('x')
-    m= T.matrix('m')
+    m= T.fmatrix('m')
     y =T.ivector('y')
     model =LSTM_Lr(input1=x,mask1=m,label= y,word_embeddings=word_embeddings,
                    batch_size=test_batch_size,
@@ -364,10 +365,10 @@ def trainLstm():
 
     )
     cost =model.cost
-    f_cost = theano.function([x,m, y], cost, name='f_cost')
+    # f_cost = theano.function([x,m, y], cost, name='f_cost')
     tparams, errors = model.tparams, model.errors
     grads = T.grad(cost, wrt=tparams.values())
-    f_grad = theano.function([x,m, y], grads, name='f_grad')
+    # f_grad = theano.function([x,m, y], grads, name='f_grad')
     f_pred =model.f_pred
     f_pred_prob =model.f_pred_prob
     lr = T.scalar(name='lr')
@@ -412,6 +413,9 @@ def trainLstm():
                 x_zheng = [trainSet[0][t]for t in train_index]
                 x1, x1_mask, y = prepare_data(x_zheng, y)
                 n_samples += x1.shape[1]
+                print  n_samples
+                print x1.shape
+
                 cost = f_grad_shared(x1, x1_mask, y)
                 f_update(lrate)
                 if np.isnan(cost) or np.isinf(cost):
@@ -440,14 +444,14 @@ def trainLstm():
 
                         best_p = unzip(model.tparams)
                         bad_counter = 0
-                        test_prob_best = pred_probs(f_pred_prob, prepare_data, testSet, kf_test)
+                        test_prob_best = pred_probs(f_pred_prob, prepare_data, test, kf_test)
 
                         np.savetxt('QAcorpus/test_best.txt', test_prob_best, fmt='%.4f', delimiter=' ')
 
 
                     print ('Train ', train_err, 'Test ', test_err)
 
-            test_prob = pred_probs(f_pred_prob, prepare_data, testSet, kf_test)
+            test_prob = pred_probs(f_pred_prob, prepare_data, test, kf_test)
 
             np.savetxt('QAcorpus/test_prob_'+str(eidx)+'.txt', test_prob, fmt='%.4f', delimiter=' ')
 
