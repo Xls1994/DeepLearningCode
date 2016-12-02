@@ -18,7 +18,7 @@ from keras.utils.np_utils import to_categorical
 import  cPickle
 import numpy as np
 from keras import backend as K
-from Transform import Transform
+
 def CNNmodel():
     nb_filter = 50
     maxlen=10
@@ -144,6 +144,19 @@ if __name__=='__main__':
     model.compile(loss='categorical_crossentropy',
                   optimizer='adagrad',
                   metrics=['accuracy'])
+
+    print ('train...on batch...')
+    # trainOnbatch(nb_epoch)
+    #
+    model.fit(train_set_x,trainlabel,32,10)
+    result =model.predict(test_set_x)
+    cost,acc =model.evaluate(test_set_x,testlabel)
+    print ('accuracy',acc)
+    np.savetxt('result11'+'.txt',result,fmt='%.2f',delimiter=' ')
+    json_str =model.to_json()
+    # getlayer2=K.function([model.layers[0].input,K.learning_phase()],[model.layers[4].output])
+    # layerout= getlayer2([test_set_x,0])
+
     def trainOnbatch(nb_epoch):
         batch_index =0
         batch_size = 50
@@ -155,20 +168,10 @@ if __name__=='__main__':
             print ('train...cost',cost)
             batch_index += batch_size
             batch_index = 0 if batch_index>=train_set_x.shape[0] else batch_index
-            testcost,accuracy =model.evaluate(test_set_x, testlabel, verbose=0)
-            print('test cost:',cost,'test accuracy:', accuracy)
-            result =model.predict(test_set_x)
-            np.savetxt('results/result'+str(i)+'.txt',result,fmt='%.2f',delimiter=' ')
-    print ('train...on batch...')
-    trainOnbatch(nb_epoch)
-    #
-    # model.fit(train_set_x,trainlabel,32,10)
-    # result =model.predict(test_set_x)
-    # cost,acc =model.evaluate(test_set_x,testlabel)
-    # print ('accuracy',acc)
-    # np.savetxt('result11'+'.txt',result,fmt='%.2f',delimiter=' ')
-    # getlayer2=K.function([model.layers[0].input,K.learning_phase()],[model.layers[4].output])
-    # layerout= getlayer2([test_set_x,0])
-
+            model.save_weights('model'+str(i)+'.hdf5')
+            # testcost,accuracy =model.evaluate(test_set_x, testlabel, verbose=0)
+            # print('test cost:',cost,'test accuracy:', accuracy)
+            # result =model.predict(test_set_x)
+            # np.savetxt('results/result'+str(i)+'.txt',result,fmt='%.2f',delimiter=' ')
 
 
