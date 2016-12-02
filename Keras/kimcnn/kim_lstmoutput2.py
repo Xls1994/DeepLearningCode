@@ -9,7 +9,7 @@ import numpy as np
 import  cPickle
 import  theano.tensor as T
 from keras.models import Sequential,Model
-from keras.layers import Dense, Dropout, Activation, Flatten,Input,Merge,LSTM,GRU
+from keras.layers import Dense, Dropout, Activation, Flatten,Input,Merge,LSTM
 from keras.layers import Embedding
 from keras.layers import Convolution1D, MaxPooling1D
 from process_data import make_idx_data_cv
@@ -86,11 +86,11 @@ if __name__=='__main__':
 
     print ('train...on batch...')
 
-    model.fit(train_set_x,trainlabel,32,10)
+    model.fit(train_set_x,trainlabel,32,5)
     result =model.predict(test_set_x)
     cost,acc =model.evaluate(test_set_x,testlabel)
     print ('accuracy',acc)
-    np.savetxt('result'+'.txt',result,fmt='%.2f',delimiter=' ')
+    np.savetxt('result'+'.txt',result,fmt='%.4f',delimiter=' ')
     json_str =model.to_json()
     open('model.json','w').write(json_str)
 
