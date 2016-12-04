@@ -98,7 +98,7 @@ class LSTM_Lr (object):
         self.p_y_given_x =p_y_given_x
         self.y_pred =y_perd
         off =1e-8
-        self.cost = -T.log(self.p_y_given_x[T.arange(n_samples), label] + off).mean()
+        self.cost = -T.log(self.p_y_given_x[T.arange(batch_size), label] + off).mean()
         self.f_pred = theano.function([input1, mask1], y_perd, name='f_pred')
         self.f_pred_prob =theano.function([input1,mask1],p_y_given_x,name='f_pred_prob')
         self.errors =T.mean(T.neq(self.y_pred, label))
@@ -332,16 +332,16 @@ def trainLstm():
     saveFreq=200,  # Save the parameters after every saveFreq updates
     path ='QAcorpus/Word/mr_FscopeContexts.pkl'
     dispFreq=10
-    test_size =4000
+    test_size =11954
     test_batch_size = int(256)
     embedding_size = 100
     n_epochs = 20
     filter_sizes = [1, 2, 3]
     num_filters = 500
-    maxLen =12
+    maxLen =10
     lrate=0.01
     saveto='1.npz'
-    trainSet,testSet,word_embeddings = load_data(path,n_words=10733,maxlen=12)
+    trainSet,testSet,word_embeddings = load_data(path,n_words=10733,maxlen=10)
     if test_size > 0:
         # The test set is sorted by size, but we want to keep random
         # size example.  So we must select a random selection of the
@@ -486,5 +486,65 @@ def trainLstm():
 
     pass
 
+def train():
+    import cPickle
+    path ='QAcorpus/Word/mr_FscopeContexts.pkl'
+    batch_size = int(256)
+    embedding_size = 100
+    n_epochs = 20
+    filter_sizes = [1, 2, 3]
+    num_filters = 500
+    maxLen =10
+    lrate=0.01
+    saveto='1.npz'
+    print('load data')
+    f =open(path,'r')
+    trainSet = cPickle.load(f)
+    testSet = cPickle.load(f)
+    embeddings =cPickle.load(f)
+    f.close()
+    word_embeddings =embeddings[0]
+    print 'Building model'
+    x = T.imatrix('x')
+    m= T.fmatrix('m')
+    y =T.ivector('y')
+    model =LSTM_Lr(input1=x,mask1=m,label= y,word_embeddings=word_embeddings[1:,:],
+                   batch_size=batch_size,
+                   sequence_len=maxLen,
+                   embedding_size=embedding_size,
+                   filter_sizes=filter_sizes,
+                   num_filters=num_filters
+
+    )
+    cost =model.cost
+    tparams, errors = model.tparams, model.errors
+    grads = T.grad(cost, wrt=tparams.values())
+    f_pred =model.f_pred
+    f_pred_prob =model.f_pred_prob
+    lr = T.scalar(name='lr')
+    f_grad_shared,   f_update \
+        = adadelta(lr, tparams, grads, x, m,  y, cost)
+
+    print 'Optimization'
+    # train_set_x, train_set_y =trainSet
+    # test_set_x,test_set_y =testSet
+    print "%d train examples" % len(trainSet[0])
+    epoch =0
+    uidx =0
+    for epoch in range(n_epochs):
+        kf = get_minibatches_idx(len(trainSet[0]), batch_size, shuffle=False)
+        for _, train_index in kf:
+            uidx +=1
+            y = [trainSet[1][t] for t in train_index]
+            x = [trainSet[0][t]for t in train_index]
+            x, mask, y = prepare_data(x, y)
+            cost =f_grad_shared(x,mask,y)
+            f_update(lrate)
+            print 'update',uidx,'cost:',cost
+        train_err = pred_error(f_pred, prepare_data, trainSet, kf)
+        print 'train err',train_err
+
+
+
 if __name__ == '__main__':
-    trainLstm()
+    train()
