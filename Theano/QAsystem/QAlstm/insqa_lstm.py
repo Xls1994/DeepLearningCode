@@ -526,17 +526,36 @@ def train():
         = adadelta(lr, tparams, grads, x, m,  y, cost)
 
     print 'Optimization'
-    # train_set_x, train_set_y =trainSet
-    # test_set_x,test_set_y =testSet
     print "%d train examples" % len(trainSet[0])
+    train_x,train_y =trainSet
+    print type(train_x)
+    print np.shape(train_x)
+    print np.shape(train_y)
+    print len(train_x)
+    test_x,test_y =testSet
+    trainFile =np.concatenate((train_x,train_y),axis=1)
+    if train_x.shape[0] % batch_size > 0:
+        extra_data_num = batch_size - train_x[0].shape[0] % batch_size
+        train_set = np.random.permutation(trainFile)
+        extra_data = train_set[:extra_data_num]
+        new_data=np.append(trainSet,extra_data,axis=0)
+    else:
+        new_data = trainSet
+    train_x_new =new_data[:,0:-2]
+    train_y_new =new_data[:,-1]
+
     epoch =0
     uidx =0
     for epoch in range(n_epochs):
-        kf = get_minibatches_idx(len(trainSet[0]), batch_size, shuffle=False)
+        kf = get_minibatches_idx(len(train_x_new), batch_size, shuffle=False)
+        print kf
         for _, train_index in kf:
             uidx +=1
-            y = [trainSet[1][t] for t in train_index]
-            x = [trainSet[0][t]for t in train_index]
+            if len(train_index)!=batch_size:
+                print 'error'
+                break
+            y = [train_y_new[t] for t in train_index]
+            x = [train_x_new[t]for t in train_index]
             x, mask, y = prepare_data(x, y)
             cost =f_grad_shared(x,mask,y)
             f_update(lrate)
