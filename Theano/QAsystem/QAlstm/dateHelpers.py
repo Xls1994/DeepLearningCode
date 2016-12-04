@@ -5,14 +5,7 @@ np.random.seed(1566)
 
 
 if __name__=='__main__':
-    import cPickle
-    # path ='QAcorpus/Word/mr_FscopeContexts.pkl'
-    # print('load data')
     batch_size =2
-    # f =open(path,'r')
-    # trainSet = cPickle.load(f)
-    # f.close()
-    # train_x,train_y =trainSet
     train_x =np.arange(9).reshape((3,3))
     train_y =np.asarray([1,0,1])
     train_y_new =np.reshape(train_y,(len(train_y),1))
@@ -35,3 +28,5 @@ if __name__=='__main__':
         ff=new_data.tolist()
         print(type(ff))
         print 'ffff',ff
+    else:
+        print 'pass'

@@ -527,6 +527,10 @@ def train():
 
     print 'Optimization'
     print "%d train examples" % len(trainSet[0])
+    print 'type....',type(trainSet)
+    print 'type....', type(trainSet[0])
+    print 'shape...', np.shape(trainSet[0])
+    print 'shape ...label',np.shape(trainSet[1])
 
     epoch =0
     uidx =0
