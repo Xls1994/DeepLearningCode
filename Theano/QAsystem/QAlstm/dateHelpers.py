@@ -34,5 +34,20 @@ def selectRandomDataSet():
         print 'ffff',ff
     else:
         print 'pass'
+def tensorTest():
+    import numpy
+    import theano
+    import  theano.tensor as  T
+    from theano.tensor import raw_random
+    x =T.matrix('x',dtype='int32')
+    # rn =raw_random.RandomStreamsBase
+    y =x.dimshuffle([1,0])
+    # y =x.T
+    f =theano.function([x],[y])
+    z = f(np.arange(9).reshape((3,3)))
+    print numpy.shape(z)
+    print 'zzzz',z
 if __name__=='__main__':
-    embeddingTest()
+    # embeddingTest()
+    tensorTest()
+    pass
