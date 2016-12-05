@@ -1,10 +1,14 @@
 import  numpy as np
 np.random.seed(1566)
 
+def embeddingTest():
+    x = [0,1,2,3,6,1]
+    embedding =np.loadtxt('numpy.txt',dtype='float32',delimiter=' ')
+    # embedding =np.asarray([11,12,13,14,15,16,17]).reshape((7,1))
+    z =embedding[np.asarray(x).flatten()]
+    print z
 
-
-
-if __name__=='__main__':
+def selectRandomDataSet():
     batch_size =2
     train_x =np.arange(9).reshape((3,3))
     train_y =np.asarray([1,0,1])
@@ -30,3 +34,5 @@ if __name__=='__main__':
         print 'ffff',ff
     else:
         print 'pass'
+if __name__=='__main__':
+    embeddingTest()

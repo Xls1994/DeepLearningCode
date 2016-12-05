@@ -174,5 +174,37 @@ if __name__=='__main__':
             # result =model.predict(test_set_x)
             # np.savetxt('results/result'+str(i)+'.txt',result,fmt='%.2f',delimiter=' ')
 
+    def preditFval(predictions):
+        num = len(predictions)
+        with open('L_predict_result.txt', 'w') as f:
+            for i in range(num):
+                if predictions[i][1] > predictions[i][0]:
+                    predict = +1
+                else:
+                    predict = -1
+                f.write(str(predict) + str(predictions[i]) + '\n')
 
+        TP = len([1 for i in range(num) if
+                  predictions[i][1] > predictions[i][0] and (test_label[i] == np.asarray([0, 1])).all()])
+        FP = len([1 for i in range(num) if
+                  predictions[i][1] > predictions[i][0] and (test_label[i] == np.asarray([1, 0])).all()])
+        FN = len([1 for i in range(num) if
+                  predictions[i][1] < predictions[i][0] and (test_label[i] == np.asarray([0, 1])).all()])
+        TN = len([1 for i in range(num) if
+                  predictions[i][1] < predictions[i][0] and (test_label[i] == np.asarray([1, 0])).all()])
+
+        print('Wether match? ', (TP + FP + FN + TN) == num)
+        print(TP, FP, FN, TN)  # 0 0 1875 9803
+
+        precision = TP / (float)(TP + FP)
+        recall = TP / (float)(TP + FN)
+        Fscore = (2 * precision * recall) / (precision + recall)  # ZeroDivisionError: integer division or modulo by zero
+
+        print(">> Report the result ...")
+        print("-1 --> ", len([1 for i in range(num) if predictions[i][1] < predictions[i][0]]))
+        print("+1 --> ", len([1 for i in range(num) if predictions[i][1] > predictions[i][0]]))
+        print("TP=", TP, "  FP=", FP, " FN=", FN, " TN=", TN)
+        print("precision= ", precision)
+        print("recall= ", recall)
+        print("Fscore= ", Fscore)
 
