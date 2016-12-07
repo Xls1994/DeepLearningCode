@@ -108,7 +108,10 @@ def loadData(path):
 
 if __name__=='__main__':
     # set  batch parameters:
-
+    max_features = 10650
+    maxlen = 20
+    embedding_size = 100
+    nb_filter =200
     #set dims
     embedding_dims = 100
     hidden_dims = 50
@@ -156,6 +159,27 @@ if __name__=='__main__':
     json_str =model.to_json()
     # getlayer2=K.function([model.layers[0].input,K.learning_phase()],[model.layers[4].output])
     # layerout= getlayer2([test_set_x,0])
+
+    def buildModel():
+        main_inputs =Input(shape=(maxlen,),dtype='int32',name='main_input')
+        inputs =Embedding(max_features, embedding_size, input_length=maxlen)(main_inputs)
+        x =Dropout(0.25)(inputs)
+        convs = []
+        filter_sizes =(3,4,5)
+        for fsz in filter_sizes:
+            conv = Convolution1D(nb_filter=nb_filter,
+                                     filter_length=fsz,
+                                     border_mode='valid',
+                                     activation='relu',
+                                     subsample_length=1)(x)
+            pool = MaxPooling1D(pool_length=2)(conv)
+            # flatten = Flatten()(pool)
+            convs.append(pool)
+        out = Merge(mode='concat',concat_axis=1)(convs)
+        x =LSTM(50)(out)
+        predict =Dense(2,activation='softmax')(x)
+        model =Model(input=main_inputs,output=predict)
+        return model
 
     def trainOnbatch(nb_epoch):
         batch_index =0
