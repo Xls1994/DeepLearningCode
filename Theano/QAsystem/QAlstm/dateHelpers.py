@@ -38,13 +38,18 @@ def tensorTest():
     import numpy
     import theano
     import  theano.tensor as  T
-    from theano.tensor import raw_random
+    from theano.tensor.raw_random import permutation
     x =T.matrix('x',dtype='int32')
-    # rn =raw_random.RandomStreamsBase
-    y =x.dimshuffle([1,0])
-    # y =x.T
-    f =theano.function([x],[y])
-    z = f(np.arange(9).reshape((3,3)))
+
+    y =T.reshape(x,(x.shape[1],x.shape[0]))
+    transY =x.T
+    f =theano.function([x],transY)
+
+    inputs =np.arange(6).reshape((2,3))
+    reinputs =inputs.reshape((inputs.shape[1],inputs.shape[0]))
+    print(np.shape(inputs))
+    print('reinputs',reinputs)
+    z = f(inputs)
     print numpy.shape(z)
     print 'zzzz',z
 if __name__=='__main__':
