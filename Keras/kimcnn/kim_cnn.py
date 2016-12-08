@@ -142,16 +142,15 @@ if __name__=='__main__':
     model.add(Activation('softmax'))
     model.summary()
     print ('start...')
-    trainlabel = to_categorical(train_set_y)
+    train_label = to_categorical(train_set_y)
     testlabel =to_categorical(test_set_y)
     model.compile(loss='categorical_crossentropy',
                   optimizer='adagrad',
                   metrics=['accuracy'])
 
     print ('train...on batch...')
-    # trainOnbatch(nb_epoch)
-    #
-    model.fit(train_set_x,trainlabel,32,10)
+
+    model.fit(train_set_x, train_label, 32, 10)
     result =model.predict(test_set_x)
     cost,acc =model.evaluate(test_set_x,testlabel)
     print ('accuracy',acc)
@@ -186,7 +185,7 @@ if __name__=='__main__':
         batch_size = 50
         for i in range(nb_epoch):
             X_batch =train_set_x[batch_index:batch_size+batch_index,]
-            Y_batch =trainlabel[batch_index:batch_size+batch_index,]
+            Y_batch = train_label[batch_index:batch_size + batch_index, ]
             print (np.shape(X_batch))
             cost = model.train_on_batch(X_batch,Y_batch)
             print ('train...cost',cost)

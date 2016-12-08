@@ -27,7 +27,7 @@ embedding_dims = 50
 nb_filter = 250
 filter_length = 3
 hidden_dims = 250
-nb_epoch = 2
+nb_epoch = 1
 
 print('Loading data...')
 (X_train, y_train), (X_test, y_test) = imdb.load_data(nb_words=max_features)
@@ -76,3 +76,5 @@ model.fit(X_train, y_train,
           batch_size=batch_size,
           nb_epoch=nb_epoch,
           validation_data=(X_test, y_test))
+score =model.predict(X_test)
+print (score)
