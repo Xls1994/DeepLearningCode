@@ -8,10 +8,8 @@ def embeddingTest():
     z =embedding[np.asarray(x).flatten()]
     print z
 
-def selectRandomDataSet():
-    batch_size =2
-    train_x =np.arange(9).reshape((3,3))
-    train_y =np.asarray([1,0,1])
+def selectRandomDataSet(batch_size,train_x,train_y):
+
     train_y_new =np.reshape(train_y,(len(train_y),1))
     print( type(train_y_new))
     print train_y_new.shape
@@ -26,14 +24,11 @@ def selectRandomDataSet():
         new_data=np.append(trainFile,extra_data,axis=0)
         x =new_data[...,:-1]
         y =new_data[:,-1]
-        print 'xxx',x
-        print x.shape
-        print 'yyyyy',y
-        ff=new_data.tolist()
-        print(type(ff))
-        print 'ffff',ff
     else:
         print 'pass'
+        x =train_x
+        y =train_y
+    return x.tolist(),y.tolist()
 def tensorTest():
     import numpy
     import theano
@@ -54,5 +49,11 @@ def tensorTest():
     print 'zzzz',z
 if __name__=='__main__':
     # embeddingTest()
-    tensorTest()
+    # tensorTest()
+    batch_size =3
+    train_x =np.arange(9).reshape((3,3))
+    train_y =np.asarray([1,0,1])
+    x,y=selectRandomDataSet(batch_size,train_x,train_y)
+    print x
+    print y
     pass

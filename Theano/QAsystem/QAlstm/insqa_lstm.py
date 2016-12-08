@@ -499,10 +499,12 @@ def train():
     saveto='1.npz'
     print('load data')
     f =open(path,'r')
-    trainSet = cPickle.load(f)
+    trainData = cPickle.load(f)
     testSet = cPickle.load(f)
     embeddings =cPickle.load(f)
     f.close()
+    print('select random dataset')
+    trainSet =selectRandomDataSet(batch_size=batch_size,train_x=trainData[0],train_y=trainData[1])
     word_embeddings =embeddings[0]
     print 'Building model'
     x = T.imatrix('x')
@@ -530,19 +532,21 @@ def train():
     print 'type....',type(trainSet)
     print 'type....', type(trainSet[0])
     print 'shape...', np.shape(trainSet[0])
+
     print 'shape ...label',np.shape(trainSet[1])
 
     epoch =0
     uidx =0
     for epoch in range(n_epochs):
         kf = get_minibatches_idx(len(trainSet[0]), batch_size, shuffle=False)
-        print kf
+        # print kf
         for _, train_index in kf:
             uidx +=1
             if len(train_index)!=batch_size:
                 print 'error'
                 break
             y = [trainSet[1][t] for t in train_index]
+            print('type y....',y)
             x = [trainSet[0][t]for t in train_index]
             x, mask, y = prepare_data(x, y)
             cost =f_grad_shared(x,mask,y)
