@@ -74,12 +74,6 @@ if __name__=='__main__':
         predict =Dense(2,activation='softmax')(x)
         model =Model(input=main_inputs,output=predict)
         return model
-    def buildAttmodel():
-    	  main_inputs =Input(shape=(maxlen,),dtype='int32',name='main_input')
-        inputs =Embedding(max_features, embedding_size, input_length=maxlen,weights=wordEM)(main_inputs)
-        left = Convolution1D(nb_filte =nb_filter,
-        										
-        )
     model =buildModel()
 
     model.summary()
