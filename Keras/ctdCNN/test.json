@@ -1,0 +1,14 @@
+{
+    "TraiContext": "corpus/dep/train_word.cnn",
+    "TraiLabel": "corpus/Label/train_label.cnn",
+    "TestContext": "corpus/dep/test_word.cnn",
+    "TestLabel": "corpus/Label/test_label.cnn",
+    "WordVector": "corpus/embedding/embedding100.vec",
+    "mrPath":"corpus/wordseq/mr.p",
+    "OutPutPath": "cnnOutPut/dep",
+     "saveEmpath":"embedding/dep",
+    "dictPath": "corpus/dicts.txt",
+    "trainFea": "corpus/train.feature",
+    "testFea": "corpus/test.feature",
+    "ctdEm":"corpus/embeddings.txt"
+}
