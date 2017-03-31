@@ -112,8 +112,8 @@ def buildModel():
                   optimizer='adagrad',
                   metrics=['accuracy'])
     model.summary()
-    from keras.utils.visualize_util import plot
-    plot(model,to_file='model.png')
+    from keras.utils.vis_util import plot_model
+    plot_model(model,to_file='model.png')
 
     return model
 
