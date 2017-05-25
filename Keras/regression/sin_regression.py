@@ -3,7 +3,7 @@ from keras.models import Sequential
 from keras.layers import Dense,Activation
 from keras.optimizers import  SGD
 from sklearn import  preprocessing
-from keras.utils.visualize_util import plot
+from keras.utils.vis_utils import plot_model
 import  numpy as np
 import  matplotlib.pyplot as plt
 #train data
@@ -46,4 +46,4 @@ ax.plot(x_prd,out,'k--',lw=4)
 ax.set_xlabel('Measured')
 ax.set_ylabel('Predicted')
 plt.show()
-plot(model,'model.png')
+plot_model(model,'model.png')
