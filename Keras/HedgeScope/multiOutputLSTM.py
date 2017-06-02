@@ -122,19 +122,19 @@ def E_C_lstm():
     out =concatenate(inputs=[ENout,CHout])
     out =Dense(2,activation='softmax',name='Finout')(out)
 
-    Mo =Model(inputs=[English_input,Chinese_input], outputs=[out,ENout,CHout,loss_out])
-    Mo.summary()
-    return  Mo
+    model =Model(inputs=[English_input,Chinese_input], outputs=[out,ENout,CHout,loss_out])
+    model.summary()
+    return  model
 
 
-Mo =E_C_lstm()
-Mo.compile(optimizer='sgd',loss={'Finout':'categorical_crossentropy','losss':lambda x ,y:y,'ENout':'categorical_crossentropy',
+model =E_C_lstm()
+model.compile(optimizer='sgd',loss={'Finout':'categorical_crossentropy','losss':lambda x ,y:y,'ENout':'categorical_crossentropy',
                                  'CHout':'categorical_crossentropy'})
 from keras.utils import plot_model
 x_train,y_train,x_test,y_test =loadData()
 from keras.utils.np_utils import to_categorical
 y_train =to_categorical(y_train,2)
-Mo.fit([x_train,x_train],[y_train,y_train,y_train,y_train],batch_size=32,epochs=10)
+model.fit([x_train,x_train],[y_train,y_train,y_train,y_train],batch_size=32,epochs=10)
 plot_model(Mo,'mo.png')
 # import json
 # from keras.models import model_from_json
@@ -144,7 +144,7 @@ plot_model(Mo,'mo.png')
 # model =model_from_json(json_string=jsonfile)
 
 # # try using different optimizers and different optimizer configs
-# Mo.compile(optimizer='adam',loss= 'binary_crossentropy', loss_weights=[1,0.5,0.5],metrics=['accuracy'])
+# model.compile(optimizer='adam',loss= 'binary_crossentropy', loss_weights=[1,0.5,0.5],metrics=['accuracy'])
 #
 
 
