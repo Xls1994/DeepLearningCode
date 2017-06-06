@@ -135,7 +135,7 @@ x_train,y_train,x_test,y_test =loadData()
 from keras.utils.np_utils import to_categorical
 y_train =to_categorical(y_train,2)
 model.fit([x_train,x_train],[y_train,y_train,y_train,y_train],batch_size=32,epochs=10)
-plot_model(Mo,'mo.png')
+plot_model(model,'model.png')
 # import json
 # from keras.models import model_from_json
 # with open('model.json', 'r') as f:
