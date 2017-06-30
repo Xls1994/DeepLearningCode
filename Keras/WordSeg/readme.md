@@ -5,4 +5,4 @@
 然后利用双向LSTM模型进行中文分词，模型结构很简单  
 一个双向的LSTM层，然后输出通过一个TimeDistributed的Dense层进行包装，对每个词进行预测
 
-![model](./WordSeg/model.png)
+![model](./model.png)
