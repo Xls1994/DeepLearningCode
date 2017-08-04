@@ -1,0 +1,266 @@
+
+PMID- 28767711
+OWN - NLM
+STAT- In-Process
+DA  - 20170802
+LR  - 20170802
+IS  - 1932-6203 (Electronic)
+IS  - 1932-6203 (Linking)
+VI  - 12
+IP  - 8
+DP  - 2017
+TI  - Progress towards a public chemogenomic set for protein kinases and a call for
+      contributions.
+PG  - e0181585
+LID - 10.1371/journal.pone.0181585 [doi]
+AB  - Protein kinases are highly tractable targets for drug discovery. However, the
+      biological function and therapeutic potential of the majority of the 500+ human
+      protein kinases remains unknown. We have developed physical and virtual
+      collections of small molecule inhibitors, which we call chemogenomic sets, that
+      are designed to inhibit the catalytic function of almost half the human protein
+      kinases. In this manuscript we share our progress towards generation of a
+      comprehensive kinase chemogenomic set (KCGS), release kinome profiling data of a 
+      large inhibitor set (Published Kinase Inhibitor Set 2 (PKIS2)), and outline a
+      process through which the community can openly collaborate to create a KCGS that 
+      probes the full complement of human protein kinases.
+FAU - Drewry, David H
+AU  - Drewry DH
+AUID- ORCID: http://orcid.org/0000-0001-5973-5798
+AD  - Structural Genomics Consortium, UNC Eshelman School of Pharmacy, University of
+      North Carolina at Chapel Hill, Chapel Hill, North Carolina, United States of
+      America.
+FAU - Wells, Carrow I
+AU  - Wells CI
+AD  - Structural Genomics Consortium, UNC Eshelman School of Pharmacy, University of
+      North Carolina at Chapel Hill, Chapel Hill, North Carolina, United States of
+      America.
+FAU - Andrews, David M
+AU  - Andrews DM
+AD  - AstraZeneca, Darwin Building, Cambridge Science Park, Cambridge, United Kingdom.
+FAU - Angell, Richard
+AU  - Angell R
+AD  - Drug Discovery Group, Translational Research Office, University College London
+      School of Pharmacy, 29-39 Brunswick Square, London, United Kingdom.
+FAU - Al-Ali, Hassan
+AU  - Al-Ali H
+AD  - Miami Project to Cure Paralysis, University of Miami Miller School of Medicine,
+      Miami, Florida, United States of America.
+AD  - Peggy and Harold Katz Family Drug Discovery Center, University of Miami Miller
+      School of Medicine, Miami, Florida, United States of America.
+FAU - Axtman, Alison D
+AU  - Axtman AD
+AD  - Structural Genomics Consortium, UNC Eshelman School of Pharmacy, University of
+      North Carolina at Chapel Hill, Chapel Hill, North Carolina, United States of
+      America.
+FAU - Capuzzi, Stephen J
+AU  - Capuzzi SJ
+AD  - Laboratory for Molecular Modeling, Division of Chemical Biology and Medicinal
+      Chemistry, UNC Eshelman School of Pharmacy, University of North Carolina at
+      Chapel Hill, Chapel Hill, North Carolina, United States of America.
+FAU - Elkins, Jonathan M
+AU  - Elkins JM
+AD  - Structural Genomics Consortium, Universidade Estadual de Campinas-UNICAMP,
+      Campinas, Sao Paulo, Brazil.
+FAU - Ettmayer, Peter
+AU  - Ettmayer P
+AD  - Boehringer Ingelheim RCV GmbH & Co KG, Vienna, Austria.
+FAU - Frederiksen, Mathias
+AU  - Frederiksen M
+AD  - Novartis Institutes for BioMedical Research, Novartis Campus, Basel, Switzerland.
+FAU - Gileadi, Opher
+AU  - Gileadi O
+AD  - Structural Genomics Consortium and Target Discovery Institute, Nuffield
+      Department of Clinical Medicine, University of Oxford, Oxford, United Kingdom.
+FAU - Gray, Nathanael
+AU  - Gray N
+AD  - Harvard Department of Biological Chemistry and Molecular Pharmacology, Harvard
+      Medical School, Boston, Massachusetts, United States of America.
+AD  - Department of Cancer Biology, Dana-Farber Cancer Institute, Boston,
+      Massachusetts, United States of America.
+FAU - Hooper, Alice
+AU  - Hooper A
+AD  - Drug Discovery Group, Translational Research Office, University College London
+      School of Pharmacy, 29-39 Brunswick Square, London, United Kingdom.
+FAU - Knapp, Stefan
+AU  - Knapp S
+AD  - Structural Genomics Consortium, Buchmann Institute for Molecular Life Sciences,
+      and Institute of Pharmaceutical Chemistry, Goethe University Frankfurt,
+      Max-von-Laue-Strasse 15, Frankfurt am Main, Germany.
+FAU - Laufer, Stefan
+AU  - Laufer S
+AD  - Department of Pharmaceutical Chemistry, Institute of Pharmaceutical Sciences,
+      Eberhard Karls Universitat Tubingen, Auf der Morgenstelle 8, Tubingen, Germany.
+FAU - Luecking, Ulrich
+AU  - Luecking U
+AD  - Bayer Pharma AG, Drug Discovery, Mullerstrasse 178, Berlin, Germany.
+FAU - Michaelides, Michael
+AU  - Michaelides M
+AD  - Oncology Chemistry, AbbVie, 1 North Waukegan Road, North Chicago, Illinois,
+      United States of America.
+FAU - Muller, Susanne
+AU  - Muller S
+AD  - Structural Genomics Consortium, Buchmann Institute for Molecular Life Sciences,
+      and Institute of Pharmaceutical Chemistry, Goethe University Frankfurt,
+      Max-von-Laue-Strasse 15, Frankfurt am Main, Germany.
+FAU - Muratov, Eugene
+AU  - Muratov E
+AD  - Laboratory for Molecular Modeling, Division of Chemical Biology and Medicinal
+      Chemistry, UNC Eshelman School of Pharmacy, University of North Carolina at
+      Chapel Hill, Chapel Hill, North Carolina, United States of America.
+FAU - Denny, R Aldrin
+AU  - Denny RA
+AD  - Worldwide Medicinal Chemistry, Pfizer Inc., Cambridge, Massachusetts, United
+      States of America.
+FAU - Saikatendu, Kumar S
+AU  - Saikatendu KS
+AD  - Global Research Externalization, Takeda California, Inc., 10410 Science Center
+      Drive, San Diego, California, United States of America.
+FAU - Treiber, Daniel K
+AU  - Treiber DK
+AD  - DiscoverX Corporation,Fremont, California, United States of America.
+FAU - Zuercher, William J
+AU  - Zuercher WJ
+AD  - Structural Genomics Consortium, UNC Eshelman School of Pharmacy, University of
+      North Carolina at Chapel Hill, Chapel Hill, North Carolina, United States of
+      America.
+FAU - Willson, Timothy M
+AU  - Willson TM
+AD  - Structural Genomics Consortium, UNC Eshelman School of Pharmacy, University of
+      North Carolina at Chapel Hill, Chapel Hill, North Carolina, United States of
+      America.
+LA  - eng
+PT  - Journal Article
+DEP - 20170802
+PL  - United States
+TA  - PLoS One
+JT  - PloS one
+JID - 101285081
+EDAT- 2017/08/03 06:00
+MHDA- 2017/08/03 06:00
+CRDT- 2017/08/03 06:00
+PHST- 2017/03/31 [received]
+PHST- 2017/07/03 [accepted]
+AID - 10.1371/journal.pone.0181585 [doi]
+AID - PONE-D-17-12683 [pii]
+PST - epublish
+SO  - PLoS One. 2017 Aug 2;12(8):e0181585. doi: 10.1371/journal.pone.0181585.
+      eCollection 2017.
+
+PMID- 28767222
+OWN - NLM
+STAT- Publisher
+DA  - 20170802
+LR  - 20170802
+IS  - 1554-8937 (Electronic)
+IS  - 1554-8929 (Linking)
+DP  - 2017 Aug 02
+TI  - Assessing Different E3 Ligases for Small Molecule-induced Protein Ubiquitination 
+      and Degradation.
+LID - 10.1021/acschembio.7b00485 [doi]
+AB  - Proteolysis Targeting Chimera (PROTAC) technology, the recruitment of E3
+      ubiquitin ligases to induce the degradation of a protein target, is rapidly
+      impacting chemical biology, as well as modern drug development. Here, we explore 
+      the breadth of this approach by evaluating different E3 ubiquitin ligases
+      engineered in their substrate binding domains to accept a recruiting ligand. Five
+      out of six E3 ligases were found to be amenable to recruitment for target
+      degradation. Taking advantage of the tight spatio-temporal control of inducing
+      ubiquitination on a pre-selected target in living cells, we focused on two of the
+      engineered E3 ligases, betaTRCP and parkin, to characterize their ability to
+      induce ubiquitination in comparison with the PROTAC-recruited endogenous E3
+      ligases VHL and cereblon.
+FAU - Ottis, Philipp
+AU  - Ottis P
+FAU - Toure, Momar
+AU  - Toure M
+FAU - Cromm, Philipp M
+AU  - Cromm PM
+FAU - Ko, Eunhwa
+AU  - Ko E
+FAU - Gustafson, Jeffrey L
+AU  - Gustafson JL
+FAU - Crews, Craig M
+AU  - Crews CM
+LA  - eng
+PT  - Journal Article
+DEP - 20170802
+PL  - United States
+TA  - ACS Chem Biol
+JT  - ACS chemical biology
+JID - 101282906
+EDAT- 2017/08/03 06:00
+MHDA- 2017/08/03 06:00
+CRDT- 2017/08/03 06:00
+AID - 10.1021/acschembio.7b00485 [doi]
+PST - aheadofprint
+SO  - ACS Chem Biol. 2017 Aug 2. doi: 10.1021/acschembio.7b00485.
+
+PMID- 28767108
+OWN - NLM
+STAT- Publisher
+DA  - 20170802
+LR  - 20170802
+IS  - 2040-3372 (Electronic)
+IS  - 2040-3364 (Linking)
+DP  - 2017 Aug 02
+TI  - Bioorganometallic ferrocene-tripeptide nanoemulsions.
+LID - 10.1039/c7nr03932h [doi]
+AB  - We demonstrate an effective strategy to prepare highly stable nanoemulsions using
+      ferrocene-modified tripeptides. Compared with traditional nanoemulsions,
+      bioorganometallic peptide nanoemulsions are appealing for a number of reasons,
+      including long-term and outstanding thermal stability, redox activity and
+      biocompatibility. The formed nanoemulsions could remain stable for more than four
+      months at room temperature, which is the highest stability reported so far for
+      peptide and protein emulsifiers. The phase behaviour and size distribution of the
+      emulsions could be precisely tailored by altering the temperature, solvent ratio 
+      and redox state of the ferrocene moiety. In this process, we observed a unique
+      enthalpy-driven phase transition from nanoemulsions to hydrogels, which could be 
+      attributed to the competition between the interfacial free energy and the
+      association energy among the self-assembling peptides. Moreover, we could impart 
+      catalytic activity to the nanoemulsions through rationally altering the sequence 
+      of the tripeptides. The structurally tunable, functional bioorganometallic
+      nanoemulsions offer new opportunities in many areas including drug delivery, and 
+      the food and cosmetic industries.
+FAU - Yang, Xuejiao
+AU  - Yang X
+AUID- ORCID: http://orcid.org/0000-0002-0504-9255
+AD  - State Key Laboratory of Chemical Engineering, School of Chemical Engineering and 
+      Technology, Tianjin University, Tianjin 300072, P. R. China. qiwei@tju.edu.cn.
+FAU - Wang, Yuefei
+AU  - Wang Y
+AUID- ORCID: http://orcid.org/0000-0002-5736-7431
+AD  - State Key Laboratory of Chemical Engineering, School of Chemical Engineering and 
+      Technology, Tianjin University, Tianjin 300072, P. R. China. qiwei@tju.edu.cn and
+      Tianjin Key Laboratory of Membrane Science and Desalination Technology, Tianjin
+      300072, P. R. China.
+FAU - Qi, Wei
+AU  - Qi W
+AUID- ORCID: http://orcid.org/0000-0003-0797-3473
+AD  - State Key Laboratory of Chemical Engineering, School of Chemical Engineering and 
+      Technology, Tianjin University, Tianjin 300072, P. R. China. qiwei@tju.edu.cn and
+      Tianjin Key Laboratory of Membrane Science and Desalination Technology, Tianjin
+      300072, P. R. China and Collaborative Innovation Center of Chemical Science and
+      Engineering (Tianjin), Tianjin 300072, P. R. China.
+FAU - Su, Rongxin
+AU  - Su R
+AD  - State Key Laboratory of Chemical Engineering, School of Chemical Engineering and 
+      Technology, Tianjin University, Tianjin 300072, P. R. China. qiwei@tju.edu.cn and
+      Tianjin Key Laboratory of Membrane Science and Desalination Technology, Tianjin
+      300072, P. R. China and Collaborative Innovation Center of Chemical Science and
+      Engineering (Tianjin), Tianjin 300072, P. R. China.
+FAU - He, Zhimin
+AU  - He Z
+AD  - State Key Laboratory of Chemical Engineering, School of Chemical Engineering and 
+      Technology, Tianjin University, Tianjin 300072, P. R. China. qiwei@tju.edu.cn.
+LA  - eng
+PT  - Journal Article
+DEP - 20170802
+PL  - England
+TA  - Nanoscale
+JT  - Nanoscale
+JID - 101525249
+EDAT- 2017/08/03 06:00
+MHDA- 2017/08/03 06:00
+CRDT- 2017/08/03 06:00
+AID - 10.1039/c7nr03932h [doi]
+PST - aheadofprint
+SO  - Nanoscale. 2017 Aug 2. doi: 10.1039/c7nr03932h.
