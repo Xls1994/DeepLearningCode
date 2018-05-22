@@ -13,6 +13,7 @@
 * [neural-tensor-layer](./neural-tensor-layer) NTN network developed by Socher  
 * [regression](./regression) A simple regression model to predict the sin function  
 * [representation learning](./representation%20learning) Skip-gram model implement using Keras model
+* [AttPooling CNN](./Attention-CNN) Attention Pooling CNN model
 ## utils code
 * [gs-keras](./utils/gs-keras.py) Grid search used in keras with sklearn wrappers
 * [data-augment](./utils/Minist-DataAugment.py) A simple demo for data augmentation
